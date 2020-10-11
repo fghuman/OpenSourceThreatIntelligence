@@ -346,16 +346,24 @@ def indicator_details(indicator_type, indicator_id):
     return indicator
 
 def main():
+    #Make a list of all energy pulses
     response = search_by_query("industries: Energy", 300)
+    #make a list of the other industries with the most pulses to compare relative susceptibility
+    responseFinance = search_by_query("industries: Finance",300)
+    responseGov= search_by_query("industries: Government",300)
+    responseHealth= search_by_query("industries: Healthcare",300)
+    responseManufacture = search_by_query("industries: Manufacturing",300)
+    responseNGO = search_by_query("industries: NGO",300)
+    responseAll = response+responseFinance+responseGov+responseHealth+responseManufacture+responseNGO
 
     #creates time series of tags of IOC's across months.
     #not used in the final deliverable
-    tag_dispersion(response)
+    #tag_dispersion(response)
 
     #creates time series of IOC's for different years across different months.
     #not used in final version.
-    dict = threat_dispersion(response)
-    dispersion_plot(dict)
+    #dict = threat_dispersion(response)
+    #dispersion_plot(dict)
 
     #frequency of selected tags in IOCs
     #used for graph 2
