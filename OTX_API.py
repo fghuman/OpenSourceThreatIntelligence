@@ -184,21 +184,70 @@ def targeted_country_freq(pulses):
 
     for k in list(data):
         data[k] = round(((data[k] / tc) * 100), 2)
-        if data[k] < 1.5:
+        if data[k] < 0.5:
            data.pop(k)
+           
+        data['United States'] += data['United States of America']
+        data.pop('United States of America')
+        data['Russia'] = data.pop('Russian Federation')
+        data['Vietnam'] = data.pop('Viet Nam')
+        data['Iran'] = data.pop('Iran, Islamic Republic of')
 
-    data['United States'] += data['United States of America']
-    data.pop('United States of America')
-    data['Russia'] = data.pop('Russian Federation')
-    data['Vietnam'] = data.pop('Viet Nam')
-    data['Iran'] = data.pop('Iran, Islamic Republic of')
-
+        
     data = sorted(data.items(), key=lambda x: x[1], reverse=True)
     dictionary = dict()
     Convert(data, dictionary)
 
     return dictionary
 
+def normalised_targeted_country_freq(pulses,allPulses):
+    tc = 0
+    data = dict()
+    data2 = dict()
+    data3 = dict()
+    for p in pulses:
+        targ = p['targeted_countries']
+        nioc = len(p['indicators'])
+        tc += nioc
+        for t in targ:
+
+            if t in data:
+               data[t] += nioc
+            else:
+               data[t] = nioc
+               
+    for p in allPulses:
+        targ = p['targeted_countries']
+        nioc = len(p['indicators'])
+        tc += nioc
+        for t in targ:
+            if t in data2:
+               data2[t] += nioc
+            else:
+               data2[t] = nioc
+               
+    for k in list(data):
+       if data[k] < 200:
+           data.pop(k)
+    
+    for k in data:
+        if data2[k]:        
+            data3[k] = float(data[k]) / float(data2[k]) * 100
+   
+    data = data3
+           
+        #data['United States'] += data['United States of America']
+        #data.pop('United States of America')
+       # data['Russia'] = data.pop('Russian Federation')
+        #data['Vietnam'] = data.pop('Viet Nam')
+        #data['Iran'] = data.pop('Iran, Islamic Republic of')
+
+        
+    data = sorted(data.items(), key=lambda x: x[1], reverse=True)
+    dictionary = dict()
+    Convert(data, dictionary)
+
+    return dictionary
 
 def tag_dispersion(pulses):
     dict_malware = {'01': 0, '02': 0, '03': 0, '04': 0, '05': 0, '06': 0, '07': 0, '08': 0, '09': 0, '10': 0, '11': 0,
@@ -367,20 +416,21 @@ def main():
 
     #frequency of selected tags in IOCs
     #used for graph 2
-    dict = tag_freq(response)
-    barh(dict, "Frequency of IOC's tagged with a threat type", "Frequency of threat types across IOC's in the energy industry")
+    dicto = tag_freq(response)
+    barh(dicto, "Frequency of IOC's tagged with a threat type", "Frequency of threat types across IOC's in the energy industry")
 
     #frequency of the different indicator typse amongst IOCs.
     #used for graph 3
-    dict = indicator_type_freq(response)
-    barh(dict, "Frequency of the indicator types amongst all IOC's", "Most common indicator types in the energy industry")
+    dicto = indicator_type_freq(response)
+    barh(dicto, "Frequency of the indicator types amongst all IOC's", "Most common indicator types in the energy industry")
 
     #frequency of the different countries targeted by IOCs.
     #used for graph 1.
-    dict = targeted_country_freq(response)
-    barh(dict, "frequency of IOC's targeting a specific country (above 1.5%)", "Frequency of country's targeted by energy industry IOC's")
+    dicto = targeted_country_freq(response)
+    barh(dicto, "frequency of IOC's targeting a specific country (above 1.5%)", "Frequency of country's targeted by energy industry IOC's")
 
-
+    dicto = normalised_targeted_country_freq(response, responseAll)
+    barh(dicto, "frequency of IOC's targeting a specific country (above 1.5%)", "Frequency of country's targeted by energy industry IOC's")
 
 
 if __name__ == "__main__" :
