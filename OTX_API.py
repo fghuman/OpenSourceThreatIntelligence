@@ -187,8 +187,8 @@ def targeted_country_freq(pulses):
         if data[k] < 0.5:
            data.pop(k)
            
-        #data['United States'] += data['United States of America']
-        #data.pop('United States of America')
+    data['United States'] += data['United States of America']
+    data.pop('United States of America')
         #data['Russia'] = data.pop('Russian Federation')
         #data['Vietnam'] = data.pop('Viet Nam')
         #data['Iran'] = data.pop('Iran, Islamic Republic of')
