@@ -187,11 +187,11 @@ def targeted_country_freq(pulses):
         if data[k] < 0.5:
            data.pop(k)
            
-        data['United States'] += data['United States of America']
-        data.pop('United States of America')
-        data['Russia'] = data.pop('Russian Federation')
-        data['Vietnam'] = data.pop('Viet Nam')
-        data['Iran'] = data.pop('Iran, Islamic Republic of')
+        #data['United States'] += data['United States of America']
+        #data.pop('United States of America')
+        #data['Russia'] = data.pop('Russian Federation')
+        #data['Vietnam'] = data.pop('Viet Nam')
+        #data['Iran'] = data.pop('Iran, Islamic Republic of')
 
         
     data = sorted(data.items(), key=lambda x: x[1], reverse=True)
@@ -200,7 +200,7 @@ def targeted_country_freq(pulses):
 
     return dictionary
 
-def normalised_targeted_country_freq(pulses,allPulses):
+def normalised_targeted_country_freq(pulses):
     tc = 0
     data = dict()
     data2 = dict()
@@ -215,32 +215,50 @@ def normalised_targeted_country_freq(pulses,allPulses):
                data[t] += nioc
             else:
                data[t] = nioc
-               
-    for p in allPulses:
-        targ = p['targeted_countries']
-        nioc = len(p['indicators'])
-        tc += nioc
-        for t in targ:
-            if t in data2:
-               data2[t] += nioc
-            else:
-               data2[t] = nioc
-               
+
+    data['United States'] += data['United States of America']
+    data.pop('United States of America')            
+        
     for k in list(data):
-       if data[k] < 200:
+       if data[k] < 100:
            data.pop(k)
-    
-    for k in data:
-        if data2[k]:        
-            data3[k] = float(data[k]) / float(data2[k]) * 100
    
+    print(data)
+    for k in list(data):
+        print(k)
+        query = "targeted_countries:" +str(k)
+        responseCountry = search_by_query(query ,3000)
+        if responseCountry:
+            if k == "United States":
+                query = "targeted_countries:" +str('United States of America')
+                responseCountry += search_by_query(query ,3000)
+                print("United States of America")           
+            for p in responseCountry:
+                try:
+                    targ = p['targeted_countries']
+                    nioc = len(p['indicators'])
+                    tc += nioc
+                    for t in targ:
+                        if str(t) == str(k):
+                            if t in data2:
+                                data2[t] += nioc
+                            else:
+                                data2[t] = nioc
+                except:
+                    pass
+        else:
+            data.pop(k)
+    try:
+        data2['United States'] += data2['United States of America']
+        data2.pop('United States of America')
+    except:
+        pass
+    
+    data = dict(data)
+    for k in data:
+            if data2[k]:        
+                data3[k] = float(data[k]) / float(data2[k]) * 100
     data = data3
-           
-        #data['United States'] += data['United States of America']
-        #data.pop('United States of America')
-       # data['Russia'] = data.pop('Russian Federation')
-        #data['Vietnam'] = data.pop('Viet Nam')
-        #data['Iran'] = data.pop('Iran, Islamic Republic of')
 
         
     data = sorted(data.items(), key=lambda x: x[1], reverse=True)
@@ -397,13 +415,13 @@ def indicator_details(indicator_type, indicator_id):
 def main():
     #Make a list of all energy pulses
     response = search_by_query("industries: Energy", 300)
-    #make a list of the other industries with the most pulses to compare relative susceptibility
-    responseFinance = search_by_query("industries: Finance",300)
-    responseGov= search_by_query("industries: Government",300)
-    responseHealth= search_by_query("industries: Healthcare",300)
-    responseManufacture = search_by_query("industries: Manufacturing",300)
-    responseNGO = search_by_query("industries: NGO",300)
-    responseAll = response+responseFinance+responseGov+responseHealth+responseManufacture+responseNGO
+    #NOT USED: make a list of the other industries with the most pulses to compare relative susceptibility
+    #responseFinance = search_by_query("industries: Finance",300)
+    #responseGov= search_by_query("industries: Government",300)
+    #responseHealth= search_by_query("industries: Healthcare",300)
+    #responseManufacture = search_by_query("industries: Manufacturing",300)
+    #responseNGO = search_by_query("industries: NGO",300)
+    #responseAll = response+responseFinance+responseGov+responseHealth+responseManufacture+responseNGO
 
     #creates time series of tags of IOC's across months.
     #not used in the final deliverable
@@ -429,9 +447,9 @@ def main():
     dicto = targeted_country_freq(response)
     barh(dicto, "frequency of IOC's targeting a specific country (above 1.5%)", "Frequency of country's targeted by energy industry IOC's")
 
-    dicto = normalised_targeted_country_freq(response, responseAll)
-    barh(dicto, "frequency of IOC's targeting a specific country (above 1.5%)", "Frequency of country's targeted by energy industry IOC's")
-
+    dicto = normalised_targeted_country_freq(response)
+    #barh(dicto, "frequency of IOC's targeting a specific country (above 1.5%)", "Frequency of country's targeted by energy industry IOC's")
+    print(dicto)
 
 if __name__ == "__main__" :
         main()
