@@ -227,11 +227,11 @@ def normalised_targeted_country_freq(pulses):
     for k in list(data):
         print(k)
         query = "targeted_countries:" +str(k)
-        responseCountry = search_by_query(query ,3000)
+        responseCountry = search_by_query(query ,9000)
         if responseCountry:
             if k == "United States":
                 query = "targeted_countries:" +str('United States of America')
-                responseCountry += search_by_query(query ,3000)
+                responseCountry += search_by_query(query ,9000)
                 print("United States of America")           
             for p in responseCountry:
                 try:
@@ -255,15 +255,16 @@ def normalised_targeted_country_freq(pulses):
         pass
     
     data = dict(data)
+    data2 = dict(data2)
     for k in data:
             if data2[k]:        
                 data3[k] = float(data[k]) / float(data2[k]) * 100
-    data = data3
+
 
         
-    data = sorted(data.items(), key=lambda x: x[1], reverse=True)
+    data3 = sorted(data3.items(), key=lambda x: x[1], reverse=True)
     dictionary = dict()
-    Convert(data, dictionary)
+    Convert(data3, dictionary)
 
     return dictionary
 
@@ -414,14 +415,7 @@ def indicator_details(indicator_type, indicator_id):
 
 def main():
     #Make a list of all energy pulses
-    response = search_by_query("industries: Energy", 300)
-    #NOT USED: make a list of the other industries with the most pulses to compare relative susceptibility
-    #responseFinance = search_by_query("industries: Finance",300)
-    #responseGov= search_by_query("industries: Government",300)
-    #responseHealth= search_by_query("industries: Healthcare",300)
-    #responseManufacture = search_by_query("industries: Manufacturing",300)
-    #responseNGO = search_by_query("industries: NGO",300)
-    #responseAll = response+responseFinance+responseGov+responseHealth+responseManufacture+responseNGO
+    response = search_by_query("industries: Energy", 9000)
 
     #creates time series of tags of IOC's across months.
     #not used in the final deliverable
