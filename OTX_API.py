@@ -226,7 +226,7 @@ def normalised_targeted_country_freq(pulses):
     print(data)
     for k in list(data):
         print(k)
-        query = "targeted_countries:" +str(k)
+        query = "targeted_countries:" +str(k)+"*"
         responseCountry = search_by_query(query ,9000)
         if responseCountry:
             if k == "United States":
