@@ -6,7 +6,9 @@ import numpy
 import pandas as pd
 import itertools
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+#from dateutil.relativedelta import relativedelta
+import dateutil.parser
+import fnmatch
 
 # API key
 API_KEY = '00ae9112982b83069f9566b026a8f3db4279ba4c8483930197ecd41f91230f76'
@@ -390,17 +392,25 @@ def query_timed(mr,firstYear,lastYear):
     yearList = []
     yearList.append(year)
     firstAdded = False
+    countryList = []
+    timeList = []
     while year <= lastYear:
-        query_response = otx.search_pulses(year, 10)
+        query_response = otx.search_pulses(year,20000)
         query_response = query_response['results']
-        if firstAdded == False:
-            totalResponse = query_response
-            firstAdded = True
-        else:
-            totalResponse.extend(query_response)
+        for pulse in query_response:
+            if pulse["targeted_countries"]:
+                countries = pulse["targeted_countries"]
+                for ioc in pulse["indicators"]:
+                    date = ioc["created"]
+                    date = dateutil.parser.isoparse(date)
+                    if date.year == year:
+                        print(countries,ioc["created"])
+                        countryList.append(countries)
+                        timeList.append(ioc["created"])
+                    
         year = year + 1
         yearList.append(year)
-        
+
     
 
 "instead of searching within all pulses provide a string query and only return pulses matching" \
