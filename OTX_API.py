@@ -200,6 +200,7 @@ def targeted_country_freq(pulses):
 
     return dictionary
 
+
 def normalised_targeted_country_freq(pulses):
     tc = 0
     data = dict()
@@ -383,6 +384,24 @@ def dispersion_plot(dictionary):
 
     plt.legend()
     plt.show()
+    
+def query_timed(mr,firstYear,lastYear):
+    year = firstYear
+    yearList = []
+    yearList.append(year)
+    firstAdded = False
+    while year <= lastYear:
+        query_response = otx.search_pulses(year, 10)
+        query_response = query_response['results']
+        if firstAdded == False:
+            totalResponse = query_response
+            firstAdded = True
+        else:
+            totalResponse.extend(query_response)
+        year = year + 1
+        yearList.append(year)
+        
+    
 
 "instead of searching within all pulses provide a string query and only return pulses matching" \
 "said query."
@@ -415,6 +434,10 @@ def indicator_details(indicator_type, indicator_id):
 def main():
     #Make a list of all energy pulses
     response = search_by_query("industries: Energy", 9000)
+    responseTimed = query_timed("2012", 10000, 2005, 2012)
+    responseTimed = tag_freq(responseTimed)
+    print(responseTimed)
+    
 
     #creates time series of tags of IOC's across months.
     #not used in the final deliverable
