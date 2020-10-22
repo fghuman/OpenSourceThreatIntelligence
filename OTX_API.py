@@ -239,11 +239,10 @@ def normalised_targeted_country_freq(pulses):
                     nioc = len(p['indicators'])
                     tc += nioc
                     for t in targ:
-                        if str(t) == str(k):
-                            if t in data2:
-                                data2[t] += nioc
-                            else:
-                                data2[t] = nioc
+                        if t in data2:
+                            data2[t] += nioc
+                        else:
+                            data2[t] = nioc
                 except:
                     pass
         else:
