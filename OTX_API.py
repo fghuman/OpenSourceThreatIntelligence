@@ -388,7 +388,7 @@ def dispersion_plot(dictionary):
     plt.legend()
     plt.show()
     
-def query_timed(indicatorName, indicatorType, firstYear,lastYear):
+def query_timed(indicatorName,firstYear,lastYear):
     year = firstYear
     yearList = []
     yearList.append(year)
@@ -411,18 +411,27 @@ def query_timed(indicatorName, indicatorType, firstYear,lastYear):
                     pass
                 if tryCountry:
                     if tag not in pulse["targeted_countries"]:
-                        countriesPulse.append(tag) 
+                        countriesPulse.append(countries.lookup(tag).name) 
                         print(tag)
             if pulse["targeted_countries"]:
                 for target in pulse["targeted_countries"]:
-                    countriesPulse.append(target)
+                    countriesPulse.append(countries.lookup(target).name)
             if countriesPulse:
                 for ioc in pulse["indicators"]:
-                    date = ioc["created"]
-                    date = dateutil.parser.isoparse(date)
-                    if int(date.year) in yearList:
-                        countryList.append(countriesPulse)
-                        timeList.append(ioc["created"])
+                   # if str(ioc["type"]) == indicatorType:
+                        date = ioc["created"]
+                        date = dateutil.parser.isoparse(date)
+                        if int(date.year) in yearList:
+                            countryList.append(countriesPulse)
+                            timeList.append(ioc["created"])
+        targetedCountries = dict()
+        for group in countryList:
+            for target in group:
+                if target in targetedCountries:
+                    targetedCountries[target] += 1
+                else:
+                    targetedCountries[target] = 1    
+            
 
 
     
