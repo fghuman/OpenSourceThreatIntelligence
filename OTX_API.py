@@ -9,6 +9,7 @@ from datetime import datetime
 #from dateutil.relativedelta import relativedelta
 import dateutil.parser
 import fnmatch
+from pycountry import countries
 
 # API key
 API_KEY = '00ae9112982b83069f9566b026a8f3db4279ba4c8483930197ecd41f91230f76'
@@ -387,29 +388,42 @@ def dispersion_plot(dictionary):
     plt.legend()
     plt.show()
     
-def query_timed(mr,firstYear,lastYear):
+def query_timed(indicatorName, indicatorType, firstYear,lastYear):
     year = firstYear
     yearList = []
     yearList.append(year)
     firstAdded = False
     countryList = []
     timeList = []
+    query_response = otx.search_pulses("wannacry",200)
+    query_response = query_response['results']
     while year <= lastYear:
-        query_response = otx.search_pulses(year,20000)
-        query_response = query_response['results']
+        year = year + 1
+        yearList.append(year)
         for pulse in query_response:
+            countriesPulse = []
+            for tag in pulse["tags"]:
+                tryCountry = False
+                try:
+                    checkCountry = countries.lookup(tag)
+                    tryCountry = True
+                except:
+                    pass
+                if tryCountry:
+                    if tag not in pulse["targeted_countries"]:
+                        countriesPulse.append(tag) 
+                        print(tag)
             if pulse["targeted_countries"]:
-                countries = pulse["targeted_countries"]
+                for target in pulse["targeted_countries"]:
+                    countriesPulse.append(target)
+            if countriesPulse:
                 for ioc in pulse["indicators"]:
                     date = ioc["created"]
                     date = dateutil.parser.isoparse(date)
-                    if date.year == year:
-                        print(countries,ioc["created"])
-                        countryList.append(countries)
+                    if int(date.year) in yearList:
+                        countryList.append(countriesPulse)
                         timeList.append(ioc["created"])
-                    
-        year = year + 1
-        yearList.append(year)
+
 
     
 
