@@ -12,7 +12,7 @@ import fnmatch
 from pycountry import countries
 
 # API key
-API_KEY = '00ae9112982b83069f9566b026a8f3db4279ba4c8483930197ecd41f91230f76'
+API_KEY = '57e43516da13ad57075b8a9df0eadfd984b235bd8086536e6d97743b5de4117e'
 OTX_SERVER = 'https://otx.alienvault.com/'
 # Create OTX object to interect with API.
 otx = OTXv2(API_KEY, server=OTX_SERVER)
@@ -391,48 +391,46 @@ def dispersion_plot(dictionary):
 def query_timed(indicatorName,firstYear,lastYear):
     year = firstYear
     yearList = []
-    yearList.append(year)
     firstAdded = False
     countryList = []
     timeList = []
-    query_response = otx.search_pulses("wannacry",200)
-    query_response = query_response['results']
+    query_response = otx.getall()
+    #query_response = query_response['results']
     while year <= lastYear:
-        year = year + 1
         yearList.append(year)
-        for pulse in query_response:
-            countriesPulse = []
-            for tag in pulse["tags"]:
-                tryCountry = False
+        year = year + 1
+
+    for pulse in query_response:
+        countriesPulse = []
+        for tag in pulse["tags"]:
+            tryCountry = False
+            if len(tag) >= 3:
                 try:
                     checkCountry = countries.lookup(tag)
                     tryCountry = True
                 except:
                     pass
-                if tryCountry:
-                    if tag not in pulse["targeted_countries"]:
-                        countriesPulse.append(countries.lookup(tag).name) 
-                        print(tag)
-            if pulse["targeted_countries"]:
-                for target in pulse["targeted_countries"]:
-                    countriesPulse.append(countries.lookup(target).name)
-            if countriesPulse:
-                for ioc in pulse["indicators"]:
-                   # if str(ioc["type"]) == indicatorType:
-                        date = ioc["created"]
-                        date = dateutil.parser.isoparse(date)
-                        if int(date.year) in yearList:
-                            countryList.append(countriesPulse)
-                            timeList.append(ioc["created"])
-        targetedCountries = dict()
-        for group in countryList:
-            for target in group:
-                if target in targetedCountries:
-                    targetedCountries[target] += 1
-                else:
-                    targetedCountries[target] = 1    
-            
-
+            if tryCountry:
+                if tag not in pulse["targeted_countries"]:
+                    countriesPulse.append(countries.lookup(tag).name) 
+        if pulse["targeted_countries"]:
+            for target in pulse["targeted_countries"]:
+                countriesPulse.append(countries.lookup(target).name)
+        if countriesPulse:
+            for ioc in pulse["indicators"]:
+               # if str(ioc["type"]) == indicatorType:
+                    date = ioc["created"]
+                    date = dateutil.parser.isoparse(date)
+                    if int(date.year) in yearList:
+                        countryList.append(countriesPulse)
+                        timeList.append(ioc["created"])
+    targetedCountries = dict()
+    for group in countryList:
+        for target in group:
+            if target in targetedCountries:
+                targetedCountries[target] += 1
+            else:
+                targetedCountries[target] = 1 
 
     
 
