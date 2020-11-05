@@ -418,7 +418,8 @@ def query_timed(indicatorName,firstYear,lastYear):
                 countriesPulse.append(countries.lookup(target).name)
         if countriesPulse:
             for ioc in pulse["indicators"]:
-               # if str(ioc["type"]) == indicatorType:
+                # pattern = "ransom*"
+               # if fnmatch.filter(ioc["tags], pattern):
                     date = ioc["created"]
                     date = dateutil.parser.isoparse(date)
                     if int(date.year) in yearList:
