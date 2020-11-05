@@ -388,7 +388,7 @@ def dispersion_plot(dictionary):
     plt.legend()
     plt.show()
     
-def query_timed(indicatorName,firstYear,lastYear):
+def query_timed(firstYear,lastYear, pattern= ''):
     year = firstYear
     yearList = []
     firstAdded = False
@@ -418,7 +418,6 @@ def query_timed(indicatorName,firstYear,lastYear):
                 countriesPulse.append(countries.lookup(target).name)
         if countriesPulse:
             for ioc in pulse["indicators"]:
-                # pattern = "ransom*"
                # if fnmatch.filter(ioc["tags], pattern):
                     date = ioc["created"]
                     date = dateutil.parser.isoparse(date)
@@ -466,9 +465,8 @@ def indicator_details(indicator_type, indicator_id):
 def main():
     #Make a list of all energy pulses
     response = search_by_query("industries: Energy", 9000)
-    responseTimed = query_timed("2012", 10000, 2005, 2012)
-    responseTimed = tag_freq(responseTimed)
-    print(responseTimed)
+    print(responseTimed = query_timed(2016,2016,"malware*"))
+
     
 
     #creates time series of tags of IOC's across months.
